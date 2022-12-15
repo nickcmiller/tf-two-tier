@@ -48,3 +48,34 @@ resource "aws_subnet" "public_subnet" {
     }
 }
 
+#Creates two private subnets for web tier
+resource "aws_subnet" "web_subnet" {
+    #Determines number of subnets to create
+    count = var.web_sn_count
+    vpc_id = aws_vpc.my_vpc.id
+    #pulls a cidr from the public_cidrs list defined in root
+    cidr_block = var.web_cidrs[count.index]
+    
+    #Deposits subnet in one of the available AZs
+    availability_zone = random_shuffle.az_list.result[count.index]
+    
+    tags = {
+        Name = "web_${count.index+1}"
+    }
+}
+
+#Creates two private subnets for web tier
+resource "aws_subnet" "rds_subnet" {
+    #Determines number of subnets to create
+    count = var.rds_sn_count
+    vpc_id = aws_vpc.my_vpc.id
+    #pulls a cidr from the public_cidrs list defined in root
+    cidr_block = var.rds_cidrs[count.index]
+    
+    #Deposits subnet in one of the available AZs
+    availability_zone = random_shuffle.az_list.result[count.index]
+    
+    tags = {
+        Name = "rds_${count.index+1}"
+    }
+}
