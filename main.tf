@@ -12,3 +12,10 @@ module "networking" {
   web_cidrs = [for i in range(1, 255, 4) : cidrsubnet(local.vpc_cidr, 8, i)] #Create list of private cidrs to use for web tier
   rds_cidrs = [for i in range(3, 255, 4) : cidrsubnet(local.vpc_cidr, 8, i)] #Create list of private cidrs to use for rds tier
 }
+
+#
+module "security"{
+    source = "./security"
+    access_ip = var.access_ip
+    vpc_id = module.networking.my_vpc_id
+}
