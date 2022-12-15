@@ -79,3 +79,42 @@ resource "aws_subnet" "rds_subnet" {
         Name = "rds_${count.index+1}"
     }
 }
+
+#Add Internet Gateway
+resource "aws_internet_gateway" "internet_gateway"{
+    vpc_id = aws_vpc.my_vpc.id
+    tags = {
+        Name = "my_igw"
+    }
+}
+
+#Add route table for traffic to the public subnets
+resource "aws_route_table" "public_route_table" {
+    vpc_id = aws_vpc.my_vpc.id
+    tags = {
+        Name = "my_public_rt"
+    }
+}
+
+#Associate both public subnets with the publice route table
+resource "aws_route_table_association" "public_rt_assoc" {
+    count = var.public_sn_count
+    subnet_id = aws_subnet.public_subnet.*.id[count.index]
+    route_table_id = aws_route_table.public_route_table.id
+}
+
+#Create a public route that allows all traffic to the IGW
+resource "aws_route" "public_route" {
+    route_table_id = aws_route_table.public_route_table.id
+    destination_cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.internet_gateway.id
+}
+
+#Create a default, private route table for the private subnets
+#The private subnets will have access to the default table by default
+resource "aws_default_route_table" "private_route_table" {
+    default_route_table_id = aws_vpc.my_vpc.default_route_table_id
+    tags = {
+        Name = "my_private_rt"
+    }
+}
