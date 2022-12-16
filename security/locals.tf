@@ -20,5 +20,17 @@ locals {
         }
       }
     }
+    web = {
+      name        = "web-security-group"
+      description = "Security Group for Web Tier"
+      ingress = {
+        ssh = {
+          from        = 22
+          to          = 22
+          protocol    = "tcp"
+          cidr_blocks = [var.vpc_cidr]
+        }
+      }
+    }
   }
 }
