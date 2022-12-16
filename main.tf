@@ -20,3 +20,12 @@ module "security" {
   vpc_cidr = local.vpc_cidr #References locals.tf variable
   vpc_id    = module.networking.my_vpc_id
 }
+
+module "compute" {
+  source                = "./compute"
+  instance_count        = 1
+  instance_type         = "t2.micro"
+  public_subnets        = module.networking.web_subnets
+  public_security_group = module.security.web_security_group
+  volume_size           = 10
+}
