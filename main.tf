@@ -17,7 +17,7 @@ module "networking" {
 module "security" {
   source    = "./security"
   access_ip = var.access_ip
-  vpc_cidr = local.vpc_cidr #References locals.tf variable
+  vpc_cidr  = local.vpc_cidr #References locals.tf variable
   vpc_id    = module.networking.my_vpc_id
 }
 
@@ -25,7 +25,11 @@ module "compute" {
   source                = "./compute"
   instance_count        = 1
   instance_type         = "t2.micro"
-  public_subnets        = module.networking.web_subnets
-  public_security_group = module.security.web_security_group
+  public_subnets        = module.networking.public_subnets
+  public_security_group = module.security.public_security_group
+  web_subnets           = module.networking.web_subnets
+  web_security_group    = module.security.web_security_group
   volume_size           = 10
+  vpc_id                = module.networking.my_vpc_id
+  depends_on            = [module.networking, module.security]
 }

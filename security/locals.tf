@@ -30,6 +30,12 @@ locals {
           protocol    = "tcp"
           cidr_blocks = [var.vpc_cidr]
         }
+        http = {
+          from        = 80
+          to          = 80
+          protocol    = "tcp"
+          cidr_blocks = [var.vpc_cidr]
+        }
       }
     }
   }
